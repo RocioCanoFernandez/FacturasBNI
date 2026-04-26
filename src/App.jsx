@@ -88,7 +88,8 @@ function App() {
             if (url.includes("drive.google.com/file/d/")) {
               const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
               if (match && match[1]) {
-                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                // Nuevo endpoint de Google que sí permite incrustar imágenes en web
+                return `https://lh3.googleusercontent.com/d/${match[1]}`;
               }
             }
             return url;
@@ -388,9 +389,19 @@ function App() {
                   return (
                     <div key={member.id} className="bni-card" style={inCart ? {border: '2px solid var(--bni-red)'} : {}}>
                       <div className="bni-card-body">
-                        <img src={member.photo} alt={member.name} className="bni-card-avatar" />
-                        <h3 className="bni-card-name">{member.name}</h3>
-                        <p className="bni-card-desc" style={{marginTop: '10px'}}>{member.desc}</p>
+                        <img 
+                          src={member.photo} 
+                          alt={member.name} 
+                          className="bni-card-avatar"
+                          onError={(e) => {
+                            e.target.onerror = null; // prevents looping
+                            e.target.src = "https://ui-avatars.com/api/?name=BNI&background=B90000&color=fff";
+                          }}
+                        />
+                        <h3 className="bni-card-name" style={{ marginBottom: '5px' }}>{member.name}</h3>
+                        {member.company && <h4 className="bni-card-company" style={{ fontSize: '1rem', color: 'var(--bni-red)', margin: '0 0 5px 0' }}>{member.company}</h4>}
+                        {member.specialty && <p className="bni-card-specialty" style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#555', margin: '0 0 10px 0' }}>{member.specialty}</p>}
+                        {member.desc && <p className="bni-card-desc" style={{marginTop: '10px'}}>{member.desc}</p>}
                         
                         <button 
                           className="btn-add"
