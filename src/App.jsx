@@ -81,19 +81,35 @@ function App() {
         // Si n8n devuelve datos válidos, los usamos
         if (Array.isArray(data) && data.length > 0) {
           console.log("¡Datos cargados con éxito desde Google Sheets a través de n8n!", data);
+          
+          // Función para convertir links de Google Drive a links de imagen directa
+          const parseImageUrl = (url) => {
+            if (!url) return "https://ui-avatars.com/api/?name=BNI&background=B90000&color=fff";
+            if (url.includes("drive.google.com/file/d/")) {
+              const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+              if (match && match[1]) {
+                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+              }
+            }
+            return url;
+          };
+
           // Mapear los nombres de las columnas del Excel (en español) a los que usa la web
-          const mappedData = data.map((item, index) => ({
-            id: item.id || index + 1,
-            name: item['Miembro'] || item['Nombre y apellido'] || item.name || "Sin nombre",
-            company: item['Empresa'] || item.company || "",
-            specialty: item['Especialidad'] || item.specialty || "",
-            desc: item['Descripción'] || item.desc || "",
-            phone: item['Teléfono'] || item.phone || "",
-            email: item['E-mail'] || item['Email'] || item.email || "",
-            web: item['Web'] || item.web || "",
-            photo: item['FOTO'] || item['Foto'] || item.photo || "https://i.pravatar.cc/150?u=default",
-            esfera: item['Esfera'] || item.esfera || "Otras Profesiones"
-          }));
+          const mappedData = data
+            // Filtrar filas que son solo títulos de esferas o textos raros (ej. si no hay teléfono ni empresa, no es un miembro válido)
+            .filter(item => item['Teléfono'] || item['Empresa'])
+            .map((item, index) => ({
+              id: item.id || index + 1,
+              name: item['Miembro'] || item['Nombre y apellido'] || item.name || "Sin nombre",
+              company: item['Empresa'] || item.company || "",
+              specialty: item['Especialidad'] || item.specialty || "",
+              desc: item['Descripción'] || item.desc || "",
+              phone: item['Teléfono'] || item.phone || "",
+              email: item['E-mail'] || item['Email'] || item.email || "",
+              web: item['Web'] || item.web || "",
+              photo: parseImageUrl(item['FOTO'] || item['Foto'] || item.photo),
+              esfera: item['Esfera'] || item.esfera || "Otras Profesiones"
+            }));
           setMembers(mappedData);
         } else {
           console.warn("Datos vacíos del webhook, usando datos de prueba temporales.");
