@@ -74,7 +74,7 @@ function App() {
     const fetchDirectorio = async () => {
       try {
         // Llama al Webhook de n8n
-        const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook/bni-directorio");
+        const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook-test/bni-directorio");
         if (!res.ok) throw new Error("Fallo en la respuesta del Webhook");
         
         const data = await res.json();
@@ -155,7 +155,7 @@ function App() {
 
     // Enviar a n8n
     try {
-      const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook/bni-facturacion", {
+      const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook-test/bni-facturacion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
