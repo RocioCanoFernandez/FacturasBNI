@@ -108,6 +108,79 @@ function App() {
   const [cart, setCart] = useState([]);
   const [mesesCuota, setMesesCuota] = useState(1);
   
+  // --- ESTADOS PARA FORMULARIOS DE PAGO ---
+  const [miembroNombre, setMiembroNombre] = useState('');
+  
+  const [invitadoData, setInvitadoData] = useState({
+    nombre: '', nif: '', direccion: '', email: '', telefono: '', host: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handlePayment = async (tipo) => {
+    setIsSubmitting(true);
+    let payload = {};
+    
+    // Preparar el paquete de datos según el formulario
+    if (tipo === 'miembro') {
+      if (!miembroNombre) {
+        alert("Por favor, selecciona tu perfil oficial del listado.");
+        setIsSubmitting(false);
+        return;
+      }
+      payload = {
+        tipo_pago: "Cuota Miembro",
+        nombre: miembroNombre,
+        meses_pagados: mesesCuota,
+        importe_total: mesesCuota * 80,
+        fecha_solicitud: new Date().toISOString()
+      };
+    } else {
+      if (!invitadoData.nombre || !invitadoData.nif || !invitadoData.email) {
+        alert("Por favor, rellena al menos tu nombre, NIF y email para la factura.");
+        setIsSubmitting(false);
+        return;
+      }
+      payload = {
+        tipo_pago: "Acceso Invitado",
+        nombre: invitadoData.nombre,
+        nif: invitadoData.nif,
+        direccion: invitadoData.direccion,
+        email: invitadoData.email,
+        telefono: invitadoData.telefono,
+        miembro_anfitrion: invitadoData.host,
+        importe_total: 20,
+        fecha_solicitud: new Date().toISOString()
+      };
+    }
+
+    // Enviar a n8n
+    try {
+      const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook/bni-facturacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) throw new Error("Fallo en la conexión con n8n");
+      
+      alert("✅ ¡Datos recibidos correctamente por n8n! Generando tu factura...");
+      
+      // Limpiar los campos después del éxito
+      if (tipo === 'miembro') {
+        setMiembroNombre('');
+        setMesesCuota(1);
+      } else {
+        setInvitadoData({ nombre: '', nif: '', direccion: '', email: '', telefono: '', host: '' });
+      }
+    } catch (error) {
+      console.error("Error al enviar a n8n:", error);
+      alert("⚠️ El sistema de facturación n8n parece estar desconectado ahora mismo (posiblemente esperando acceso a Google).");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  
   // Group members by "esfera"
   const esferasMap = members.reduce((acc, member) => {
     // Si algún miembro del Excel no tiene esfera asignada, lo ponemos en una por defecto
@@ -320,7 +393,13 @@ function App() {
               
               <div className="form-group">
                 <label>Selecciona tu Perfil Oficial</label>
-                <input list="miembros-lista" className="form-control" placeholder="Empieza a escribir tu nombre..." />
+                <input 
+                  list="miembros-lista" 
+                  className="form-control" 
+                  placeholder="Empieza a escribir tu nombre..." 
+                  value={miembroNombre}
+                  onChange={(e) => setMiembroNombre(e.target.value)}
+                />
                 <datalist id="miembros-lista">
                   {members.map((m, i) => <option key={`miembro-${m.id || i}`} value={m.name} />)}
                 </datalist>
@@ -336,7 +415,14 @@ function App() {
                   <option value={6}>6 meses (480€)</option>
                 </select>
               </div>
-              <button className="btn-primary" style={{marginTop: '10px'}}>Pagar Cuotas ({mesesCuota * 80}€)</button>
+              <button 
+                className="btn-primary" 
+                style={{marginTop: '10px'}}
+                onClick={() => handlePayment('miembro')}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Procesando...' : `Pagar Cuotas (${mesesCuota * 80}€)`}
+              </button>
             </div>
 
             <div className="payment-card">
@@ -345,33 +431,46 @@ function App() {
               
               <div className="form-group">
                 <label>Nombre y Apellidos</label>
-                <input type="text" className="form-control" placeholder="Ej: Juan Pérez" />
+                <input type="text" className="form-control" placeholder="Ej: Juan Pérez" value={invitadoData.nombre} onChange={e => setInvitadoData({...invitadoData, nombre: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>NIF / CIF</label>
-                <input type="text" className="form-control" placeholder="12345678A" />
+                <input type="text" className="form-control" placeholder="12345678A" value={invitadoData.nif} onChange={e => setInvitadoData({...invitadoData, nif: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>Dirección Fiscal</label>
-                <input type="text" className="form-control" placeholder="C/ Principal 1, 28001 Madrid" />
+                <input type="text" className="form-control" placeholder="C/ Principal 1, 28001 Madrid" value={invitadoData.direccion} onChange={e => setInvitadoData({...invitadoData, direccion: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" className="form-control" placeholder="juan@ejemplo.com" />
+                <input type="email" className="form-control" placeholder="juan@ejemplo.com" value={invitadoData.email} onChange={e => setInvitadoData({...invitadoData, email: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>Teléfono</label>
-                <input type="tel" className="form-control" placeholder="600 123 456" />
+                <input type="tel" className="form-control" placeholder="600 123 456" value={invitadoData.telefono} onChange={e => setInvitadoData({...invitadoData, telefono: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>Miembro Anfitrión (Quién te invita)</label>
-                <input list="anfitriones-lista" className="form-control" placeholder="Escribe para buscar o selecciona..." />
+                <input 
+                  list="anfitriones-lista" 
+                  className="form-control" 
+                  placeholder="Escribe para buscar o selecciona..." 
+                  value={invitadoData.host} 
+                  onChange={e => setInvitadoData({...invitadoData, host: e.target.value})}
+                />
                 <datalist id="anfitriones-lista">
                   <option value="No lo recuerdo / LinkedIn" />
                   {members.map((m, i) => <option key={`host-${m.id || i}`} value={m.name} />)}
                 </datalist>
               </div>
-              <button className="btn-primary" style={{marginTop: '10px'}}>Pagar Evento Invitado (20€)</button>
+              <button 
+                className="btn-primary" 
+                style={{marginTop: '10px'}}
+                onClick={() => handlePayment('invitado')}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Procesando...' : 'Pagar Evento Invitado (20€)'}
+              </button>
             </div>
 
           </div>
