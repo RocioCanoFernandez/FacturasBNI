@@ -81,7 +81,20 @@ function App() {
         // Si n8n devuelve datos válidos, los usamos
         if (Array.isArray(data) && data.length > 0) {
           console.log("¡Datos cargados con éxito desde Google Sheets a través de n8n!", data);
-          setMembers(data);
+          // Mapear los nombres de las columnas del Excel (en español) a los que usa la web
+          const mappedData = data.map((item, index) => ({
+            id: item.id || index + 1,
+            name: item['Miembro'] || item['Nombre y apellido'] || item.name || "Sin nombre",
+            company: item['Empresa'] || item.company || "",
+            specialty: item['Especialidad'] || item.specialty || "",
+            desc: item['Descripción'] || item.desc || "",
+            phone: item['Teléfono'] || item.phone || "",
+            email: item['E-mail'] || item['Email'] || item.email || "",
+            web: item['Web'] || item.web || "",
+            photo: item['FOTO'] || item['Foto'] || item.photo || "https://i.pravatar.cc/150?u=default",
+            esfera: item['Esfera'] || item.esfera || "Otras Profesiones"
+          }));
+          setMembers(mappedData);
         } else {
           console.warn("Datos vacíos del webhook, usando datos de prueba temporales.");
         }
