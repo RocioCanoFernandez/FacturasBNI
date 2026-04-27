@@ -470,16 +470,16 @@ function App() {
               <p>¿Vienes a visitarnos al Grupo Trabajo? Rellena tus datos fiscales para emitir tu factura de asistencia a la reunión directamente.</p>
               
               <div className="form-group">
-                <label>Nombre y Apellidos</label>
-                <input type="text" className="form-control" placeholder="Ej: Juan Pérez" value={invitadoData.nombre} onChange={e => setInvitadoData({...invitadoData, nombre: e.target.value})} />
+                <label>Razón Social (o Nombre completo si eres autónomo)</label>
+                <input type="text" className="form-control" placeholder="Ej: Mi Empresa S.L. o Juan Pérez" value={invitadoData.nombre} onChange={e => setInvitadoData({...invitadoData, nombre: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>NIF / CIF</label>
                 <input type="text" className="form-control" placeholder="12345678A" value={invitadoData.nif} onChange={e => setInvitadoData({...invitadoData, nif: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Dirección Fiscal</label>
-                <input type="text" className="form-control" placeholder="C/ Principal 1, 28001 Madrid" value={invitadoData.direccion} onChange={e => setInvitadoData({...invitadoData, direccion: e.target.value})} />
+                <label>Dirección Fiscal Completa (incluye C.P. y Provincia)</label>
+                <input type="text" className="form-control" placeholder="C/ Principal 1, C.P. 41001, Sevilla" value={invitadoData.direccion} onChange={e => setInvitadoData({...invitadoData, direccion: e.target.value})} />
               </div>
               <div className="form-group">
                 <label>Email</label>
