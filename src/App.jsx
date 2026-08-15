@@ -429,7 +429,7 @@ function App() {
             
             <div className="payment-card">
               <h3>Cuotas Miembros BNI</h3>
-              <p>Selecciona tu nombre del listado oficial y abona los 80€ mensuales con un clic para generar tu factura VeriFactu.</p>
+              <p>Selecciona tu nombre del listado oficial y abona tus mensualidades con un clic para generar tu factura VeriFactu.</p>
               
               <div className="form-group">
                 <label>Selecciona tu Perfil Oficial</label>
@@ -447,12 +447,12 @@ function App() {
               <div className="form-group">
                 <label>Meses a liquidar</label>
                 <select className="form-control" value={mesesCuota} onChange={(e) => setMesesCuota(Number(e.target.value))}>
-                  <option value={1}>1 mes (80€)</option>
-                  <option value={2}>2 meses (160€)</option>
-                  <option value={3}>3 meses (240€)</option>
-                  <option value={4}>4 meses (320€)</option>
-                  <option value={5}>5 meses (400€)</option>
-                  <option value={6}>6 meses (480€)</option>
+                  <option value={1}>1 mes</option>
+                  <option value={2}>2 meses</option>
+                  <option value={3}>3 meses</option>
+                  <option value={4}>4 meses</option>
+                  <option value={5}>5 meses</option>
+                  <option value={6}>6 meses</option>
                 </select>
               </div>
               <button 
@@ -461,7 +461,7 @@ function App() {
                 onClick={() => handlePayment('miembro')}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Procesando...' : `Pagar Cuotas (${mesesCuota * 80}€)`}
+                {isSubmitting ? 'Procesando...' : `Abonar Cuotas de Miembro`}
               </button>
             </div>
 
@@ -513,6 +513,31 @@ function App() {
               </button>
             </div>
 
+          </div>
+        </section>
+
+        {/* LUGAR DE REUNIÓN SECTION */}
+        <section style={{ marginTop: '60px', marginBottom: '40px' }}>
+          <h2 className="section-title">Detalles del Lugar de Reunión</h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+            <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h3 style={{ color: 'var(--bni-red)', marginBottom: '15px' }}>📍 Abades Triana</h3>
+              <p style={{ margin: '5px 0', color: '#555' }}><strong>Día:</strong> Viernes a las 06:45h (Presencial)</p>
+              <p style={{ margin: '5px 0', color: '#555' }}><strong>Dirección:</strong> Calle Betis, 69A, 41010 Sevilla</p>
+              <p style={{ margin: '5px 0', color: '#555' }}><strong>Teléfono de contacto:</strong> <a href="tel:+34954286459" style={{ color: 'var(--bni-red)' }}>+34 954 28 64 59</a></p>
+            </div>
+            <div style={{ flex: '1 1 400px', minHeight: '250px', borderRadius: '8px', overflow: 'hidden' }}>
+              <iframe 
+                title="Mapa Abades Triana"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3170.18037307044!2d-6.0022026!3d37.3813635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd126c11709bcfa1%3A0xe543e2e8eab11818!2sAbades%20Triana!5e0!3m2!1ses!2ses!4v1700000000000!5m2!1ses!2ses" 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
           </div>
         </section>
 
