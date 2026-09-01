@@ -193,14 +193,27 @@ function App() {
       
       if (!res.ok) throw new Error("Fallo en la conexión con n8n");
       
-      alert("✅ ¡Datos recibidos correctamente por n8n! Generando tu factura...");
+      let redirected = false;
+      try {
+        const responseData = await res.json();
+        if (responseData && responseData.checkout_url) {
+          window.location.href = responseData.checkout_url;
+          redirected = true;
+        }
+      } catch (e) {
+        console.warn("La respuesta no contenía un JSON válido o faltaba checkout_url", e);
+      }
       
-      // Limpiar los campos después del éxito
-      if (tipo === 'miembro') {
-        setMiembroNombre('');
-        setMesesCuota(1);
-      } else {
-        setInvitadoData({ nombre: '', nif: '', direccion: '', email: '', telefono: '', host: '' });
+      if (!redirected) {
+        alert("✅ ¡Datos recibidos correctamente! Procesando solicitud...");
+        
+        // Limpiar los campos después del éxito
+        if (tipo === 'miembro') {
+          setMiembroNombre('');
+          setMesesCuota(1);
+        } else {
+          setInvitadoData({ nombre: '', nif: '', direccion: '', email: '', telefono: '', host: '' });
+        }
       }
     } catch (error) {
       console.error("Error al enviar a n8n:", error);
