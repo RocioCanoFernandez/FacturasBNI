@@ -312,7 +312,11 @@ function App() {
       <header className="bni-header">
         <div className="bni-header-logo-container">
           <img src="/logo_bni_trabajo.png" alt="Logo BNI Trabajo" />
-          <span className="bni-header-title">Directorio BNI | Grupo Trabajo</span>
+          <span className="bni-header-title">
+            <span>Directorio BNI</span>
+            <span className="desktop-bar">|</span>
+            <span>Grupo Trabajo</span>
+          </span>
         </div>
       </header>
 

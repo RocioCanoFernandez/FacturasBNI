@@ -52,6 +52,22 @@ body {
 .bni-header-title {
   font-size: 1.25rem;
   font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 5px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .bni-header-title .desktop-bar {
+    display: none;
+  }
+  .bni-header-title {
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    font-size: 1.15rem;
+  }
 }
 
 .app-layout {
@@ -107,10 +123,31 @@ body {
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
+    padding-bottom: 70px; /* Space for bottom nav */
   }
   .sidebar {
     width: 100%;
-    position: static;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    background: white;
+    padding: 10px;
+    border-radius: 0;
+    border-top: 2px solid var(--bni-red);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  }
+  .sidebar ul {
+    display: flex;
+    justify-content: space-around;
+  }
+  .sidebar li {
+    margin-bottom: 0;
+  }
+  .sidebar a {
+    font-size: 0.9rem;
+    padding: 5px;
+    text-align: center;
   }
 }
 
@@ -247,6 +284,21 @@ section[id] {
   box-shadow: var(--card-shadow);
   text-align: center;
   padding: 12px 6px 6px 6px;
+}
+
+@media (max-width: 480px) {
+  .esfera-circle {
+    width: 140px;
+    height: 140px;
+    padding: 15px 8px 8px 8px;
+  }
+  .esfera-icon {
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+  }
+  .esfera-name {
+    font-size: 0.75rem;
+  }
 }
 .esfera-circle:hover {
   transform: translateY(-5px);
