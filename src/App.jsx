@@ -197,8 +197,14 @@ function App() {
       try {
         const responseData = await res.json();
         if (responseData && responseData.checkout_url) {
-          window.location.href = responseData.checkout_url;
-          redirected = true;
+          if (responseData.checkout_url.startsWith('http')) {
+            window.location.href = responseData.checkout_url;
+            redirected = true;
+          } else {
+            console.error("El checkout_url recibido no es una URL válida:", responseData.checkout_url);
+            alert("⚠️ Error: n8n devolvió un enlace inválido en lugar de la pasarela de pago.");
+            redirected = true; // Avoid the default success alert below
+          }
         }
       } catch (e) {
         console.warn("La respuesta no contenía un JSON válido o faltaba checkout_url", e);
@@ -358,54 +364,6 @@ function App() {
             <p>Aquí puedes emitir tu factura de asistencia a la reunión directamente y preparar tu networking.</p>
           </div>
 
-          <div className="payment-card" style={{ marginBottom: '40px', borderTop: '4px solid var(--bni-red)' }}>
-            <h3>Acceso para Invitados</h3>
-            <p>Rellena tus datos fiscales para emitir tu factura de asistencia a la reunión directamente.</p>
-            
-            <div className="form-group">
-              <label>Razón Social (o Nombre completo si eres autónomo)</label>
-              <input type="text" className="form-control" placeholder="Ej: Mi Empresa S.L. o Juan Pérez" value={invitadoData.nombre} onChange={e => setInvitadoData({...invitadoData, nombre: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>NIF / CIF</label>
-              <input type="text" className="form-control" placeholder="12345678A" value={invitadoData.nif} onChange={e => setInvitadoData({...invitadoData, nif: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>Dirección Fiscal Completa (incluye C.P. y Provincia)</label>
-              <input type="text" className="form-control" placeholder="C/ Principal 1, C.P. 41001, Sevilla" value={invitadoData.direccion} onChange={e => setInvitadoData({...invitadoData, direccion: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input type="email" className="form-control" placeholder="juan@ejemplo.com" value={invitadoData.email} onChange={e => setInvitadoData({...invitadoData, email: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>Teléfono</label>
-              <input type="tel" className="form-control" placeholder="600 123 456" value={invitadoData.telefono} onChange={e => setInvitadoData({...invitadoData, telefono: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>Miembro Anfitrión (Quién te invita)</label>
-              <input 
-                list="anfitriones-lista" 
-                className="form-control" 
-                placeholder="Escribe para buscar o selecciona..." 
-                value={invitadoData.host} 
-                onChange={e => setInvitadoData({...invitadoData, host: e.target.value})}
-              />
-              <datalist id="anfitriones-lista">
-                <option value="No lo recuerdo / LinkedIn" />
-                {members.map((m, i) => <option key={`host-${m.id || i}`} value={m.name} />)}
-              </datalist>
-            </div>
-            <button 
-              className="btn-primary" 
-              style={{marginTop: '10px'}}
-              onClick={() => handlePayment('invitado')}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Procesando...' : 'Pagar Evento Invitado (20€)'}
-            </button>
-          </div>
-
           <h2 className="section-title">Nuestras Esferas de Especialización</h2>
           
           <div style={{ background: '#fff', borderLeft: '4px solid var(--bni-red)', padding: '15px 20px', marginBottom: '20px', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
@@ -499,12 +457,60 @@ function App() {
               </div>
             </div>
           )}
+
+          <div className="payment-card" style={{ marginTop: '40px', marginBottom: '40px', borderTop: '4px solid var(--bni-red)' }}>
+            <h3 style={{ fontSize: '1.4rem' }}>Acceso para Invitados (Pago del Desayuno)</h3>
+            <p>Rellena tus datos fiscales para emitir tu factura de asistencia a la reunión directamente.</p>
+            
+            <div className="form-group">
+              <label>Razón Social (o Nombre completo si eres autónomo)</label>
+              <input type="text" className="form-control" placeholder="Ej: Mi Empresa S.L. o Juan Pérez" value={invitadoData.nombre} onChange={e => setInvitadoData({...invitadoData, nombre: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label>NIF / CIF</label>
+              <input type="text" className="form-control" placeholder="12345678A" value={invitadoData.nif} onChange={e => setInvitadoData({...invitadoData, nif: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label>Dirección Fiscal Completa (incluye C.P. y Provincia)</label>
+              <input type="text" className="form-control" placeholder="C/ Principal 1, C.P. 41001, Sevilla" value={invitadoData.direccion} onChange={e => setInvitadoData({...invitadoData, direccion: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input type="email" className="form-control" placeholder="juan@ejemplo.com" value={invitadoData.email} onChange={e => setInvitadoData({...invitadoData, email: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label>Teléfono</label>
+              <input type="tel" className="form-control" placeholder="600 123 456" value={invitadoData.telefono} onChange={e => setInvitadoData({...invitadoData, telefono: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label>Miembro Anfitrión (Quién te invita)</label>
+              <input 
+                list="anfitriones-lista" 
+                className="form-control" 
+                placeholder="Escribe para buscar o selecciona..." 
+                value={invitadoData.host} 
+                onChange={e => setInvitadoData({...invitadoData, host: e.target.value})}
+              />
+              <datalist id="anfitriones-lista">
+                <option value="No lo recuerdo / LinkedIn" />
+                {members.map((m, i) => <option key={`host-${m.id || i}`} value={m.name} />)}
+              </datalist>
+            </div>
+            <button 
+              className="btn-primary" 
+              style={{marginTop: '10px'}}
+              onClick={() => handlePayment('invitado')}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Procesando...' : 'Pagar Evento Invitado (20€)'}
+            </button>
+          </div>
         </section>
 
         {/* MIEMBROS SECTION */}
         <section id="miembros" style={{ marginTop: '60px' }}>
-          <h2 className="section-title">Zona Miembros: Gestión de Pagos</h2>
-          <div className="payment-section" style={{ gridTemplateColumns: '1fr', maxWidth: '600px' }}>
+          <h2 className="section-title" style={{textAlign: 'center'}}>Zona Miembros: Gestión de Pagos</h2>
+          <div className="payment-section" style={{ gridTemplateColumns: '1fr', maxWidth: '800px', margin: '0 auto' }}>
             
             <div className="payment-card">
               <h3>Cuotas Miembros BNI</h3>
