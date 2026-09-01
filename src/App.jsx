@@ -361,7 +361,6 @@ function App() {
           
           <div style={{ marginBottom: '30px', fontSize: '1.05rem', color: '#555' }}>
             <p style={{marginBottom: '10px'}}><strong>¿Vienes a visitarnos al Grupo Trabajo? ¡Estaremos encantados de recibirte!</strong></p>
-            <p>Aquí puedes emitir tu factura de asistencia a la reunión directamente y preparar tu networking.</p>
           </div>
 
           <h2 className="section-title">Nuestras Esferas de Especialización</h2>
@@ -460,7 +459,7 @@ function App() {
 
           <div className="payment-card" style={{ marginTop: '40px', marginBottom: '40px', borderTop: '4px solid var(--bni-red)' }}>
             <h3 style={{ fontSize: '1.4rem' }}>Acceso para Invitados (Pago del Desayuno)</h3>
-            <p>Rellena tus datos fiscales para emitir tu factura de asistencia a la reunión directamente.</p>
+            <p>Aquí puedes preparar tu networking y emitir tu factura de asistencia a la reunión directamente.</p>
             
             <div className="form-group">
               <label>Razón Social (o Nombre completo si eres autónomo)</label>
@@ -510,7 +509,7 @@ function App() {
         {/* MIEMBROS SECTION */}
         <section id="miembros" style={{ marginTop: '60px' }}>
           <h2 className="section-title" style={{textAlign: 'center'}}>Zona Miembros: Gestión de Pagos</h2>
-          <div className="payment-section" style={{ gridTemplateColumns: '1fr', maxWidth: '800px', margin: '0 auto' }}>
+          <div className="payment-section" style={{ gridTemplateColumns: '1fr', maxWidth: '100%', margin: '0 auto' }}>
             
             <div className="payment-card">
               <h3>Cuotas Miembros BNI</h3>
