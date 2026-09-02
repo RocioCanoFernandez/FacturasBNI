@@ -196,14 +196,18 @@ function App() {
       let redirected = false;
       try {
         const responseData = await res.json();
-        if (responseData && responseData.checkout_url) {
-          if (responseData.checkout_url.startsWith('http')) {
-            window.location.href = responseData.checkout_url;
+        
+        // Revolut a veces devuelve la URL en la raíz y a veces dentro de 'metadata'
+        const urlDestino = responseData?.checkout_url || responseData?.metadata?.checkout_url;
+
+        if (urlDestino) {
+          if (urlDestino.startsWith('http')) {
+            window.location.href = urlDestino;
             redirected = true;
           } else {
-            console.error("El checkout_url recibido no es una URL válida:", responseData.checkout_url);
+            console.error("El checkout_url recibido no es una URL válida:", urlDestino);
             alert("⚠️ Error: n8n devolvió un enlace inválido en lugar de la pasarela de pago.");
-            redirected = true; // Avoid the default success alert below
+            redirected = true; // Evitar la alerta de éxito
           }
         }
       } catch (e) {
