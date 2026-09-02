@@ -491,17 +491,15 @@ function App() {
             </div>
             <div className="form-group">
               <label>Miembro Anfitrión (Quién te invita)</label>
-              <input 
-                list="anfitriones-lista" 
+              <select 
                 className="form-control" 
-                placeholder="Escribe para buscar o selecciona..." 
                 value={invitadoData.host} 
                 onChange={e => setInvitadoData({...invitadoData, host: e.target.value})}
-              />
-              <datalist id="anfitriones-lista">
-                <option value="No lo recuerdo / LinkedIn" />
-                {members.map((m, i) => <option key={`host-${m.id || i}`} value={m.name} />)}
-              </datalist>
+              >
+                <option value="">Selecciona anfitrión...</option>
+                <option value="No lo recuerdo / LinkedIn">No lo recuerdo / LinkedIn</option>
+                {members.map((m, i) => <option key={`host-${m.id || i}`} value={m.name}>{m.name}</option>)}
+              </select>
             </div>
             <button 
               className="btn-primary" 
@@ -525,16 +523,14 @@ function App() {
               
               <div className="form-group">
                 <label>Selecciona tu Perfil Oficial</label>
-                <input 
-                  list="miembros-lista" 
+                <select 
                   className="form-control" 
-                  placeholder="Empieza a escribir tu nombre..." 
                   value={miembroNombre}
                   onChange={(e) => setMiembroNombre(e.target.value)}
-                />
-                <datalist id="miembros-lista">
-                  {members.map((m, i) => <option key={`miembro-${m.id || i}`} value={m.name} />)}
-                </datalist>
+                >
+                  <option value="">Despliega y elige tu nombre...</option>
+                  {members.map((m, i) => <option key={`miembro-${m.id || i}`} value={m.name}>{m.name}</option>)}
+                </select>
               </div>
               <div className="form-group">
                 <label>Meses a liquidar</label>
