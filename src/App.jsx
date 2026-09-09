@@ -137,6 +137,9 @@ function App() {
   }, [popupDismissed]);
   const [cart, setCart] = useState([]);
   const [mesesCuota, setMesesCuota] = useState(1);
+  const [showModalSinergias, setShowModalSinergias] = useState(false);
+  const [sinergiasData, setSinergiasData] = useState({ nombre: '', fecha: '' });
+  const [isSubmittingSinergias, setIsSubmittingSinergias] = useState(false);
   
   // --- ESTADOS PARA FORMULARIOS DE PAGO ---
   const [miembroNombre, setMiembroNombre] = useState('');
@@ -259,7 +262,48 @@ function App() {
   };
 
   const handleDownloadPDF = () => {
-    window.print();
+    setShowModalSinergias(true);
+  };
+
+  const handleConfirmarSinergias = async () => {
+    if (!sinergiasData.nombre || !sinergiasData.fecha) {
+      alert("Por favor, rellena tu nombre y la fecha de visita.");
+      return;
+    }
+    
+    setIsSubmittingSinergias(true);
+    
+    const payload = {
+      nombre_invitado: sinergiasData.nombre,
+      fecha_visita: sinergiasData.fecha,
+      sinergias: cart.map(item => ({
+        nombre: item.name,
+        esfera: item.esfera,
+        email: item.email,
+        telefono: item.phone
+      }))
+    };
+
+    try {
+      const res = await fetch("https://n8n-n8n.npfusf.easypanel.host/webhook/68cd92f0-9f11-46db-b112-48fac0d9c336", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) {
+        console.warn("Fallo al enviar notificación a n8n. El PDF se descargará de todas formas.");
+      }
+    } catch (error) {
+      console.error("Error enviando sinergias a n8n:", error);
+    } finally {
+      setIsSubmittingSinergias(false);
+      setShowModalSinergias(false);
+      // Darle un pequeño tiempo al DOM para ocultar el modal antes de imprimir
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
   };
 
   return (
@@ -617,6 +661,57 @@ function App() {
             setPopupDismissed(true);
           }}>×</button>
           <p className="chat-popup-text">🤖 ¿Tienes dudas? ¡Pregúntale al asistente BNI!</p>
+        </div>
+      )}
+
+      {/* MODAL DESCARGA SINERGIAS */}
+      {showModalSinergias && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 style={{ marginTop: 0, color: 'var(--bni-red)', fontSize: '1.4rem' }}>¡Prepara tu visita! 🚀</h3>
+            <p style={{ color: '#555', fontSize: '0.95rem', marginBottom: '20px' }}>
+              Déjanos tus datos para que los anfitriones puedan organizar las presentaciones con las personas que has seleccionado.
+            </p>
+            
+            <div className="form-group">
+              <label>Tu Nombre y Apellidos</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="Ej: Ana Gómez" 
+                value={sinergiasData.nombre}
+                onChange={(e) => setSinergiasData({...sinergiasData, nombre: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Día de la Visita</label>
+              <input 
+                type="date" 
+                className="form-control" 
+                value={sinergiasData.fecha}
+                onChange={(e) => setSinergiasData({...sinergiasData, fecha: e.target.value})}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '25px' }}>
+              <button 
+                className="btn-primary" 
+                style={{ flex: 1 }} 
+                onClick={handleConfirmarSinergias}
+                disabled={isSubmittingSinergias}
+              >
+                {isSubmittingSinergias ? 'Enviando...' : 'Confirmar y Descargar'}
+              </button>
+              <button 
+                className="btn-secondary" 
+                style={{ width: 'auto', padding: '10px 15px', marginTop: 0 }} 
+                onClick={() => setShowModalSinergias(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>
