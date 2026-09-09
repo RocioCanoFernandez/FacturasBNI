@@ -410,9 +410,18 @@ function App() {
           <div className="cart-panel">
             <div className="cart-panel-header">
               <h3>Tu Selección de Networking ({cart.length})</h3>
-              <button className="btn-secondary" style={{width: 'auto'}} onClick={handleDownloadPDF}>
-                📥 Descargar PDF (Sinergias)
-              </button>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <button className="btn-secondary" style={{width: 'auto'}} onClick={handleDownloadPDF}>
+                  📥 Descargar PDF (Sinergias)
+                </button>
+                <button 
+                  onClick={() => setCart([])} 
+                  style={{ background: 'none', border: 'none', fontSize: '1.8rem', cursor: 'pointer', color: '#888', padding: '0 5px', lineHeight: '1' }} 
+                  title="Vaciar lista y cerrar"
+                >
+                  &times;
+                </button>
+              </div>
             </div>
             <div className="cart-items-list">
               {cart.map(item => (
