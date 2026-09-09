@@ -578,7 +578,7 @@ section[id] {
 
 @media print {
   /* Hide the entire screen app when printing */
-  .bni-header, .section-title, .esferas-container, .payment-section, .cart-panel, .seviai-footer, #bp-web-widget, #bp-web-widget-container, .bp-widget-widget, .chat-popup, .modal-overlay {
+  .no-print {
     display: none !important;
   }
   body, .container {
@@ -633,4 +633,29 @@ section[id] {
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   border-top: 4px solid var(--bni-red);
+}
+
+/* FAB BUTTON STYLES */
+.fab-descargar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--bni-red);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 4px 15px rgba(200, 16, 46, 0.4);
+  cursor: pointer;
+  z-index: 9999;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fab-descargar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 16, 46, 0.6);
 }

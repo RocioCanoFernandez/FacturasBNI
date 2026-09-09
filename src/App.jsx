@@ -138,7 +138,30 @@ function App() {
   const [cart, setCart] = useState([]);
   const [mesesCuota, setMesesCuota] = useState(1);
   const [showModalSinergias, setShowModalSinergias] = useState(false);
-  const [sinergiasData, setSinergiasData] = useState({ nombre: '', fecha: '' });
+  
+  // Calcular los próximos 4 viernes
+  const getNextFridays = () => {
+    const dates = [];
+    let d = new Date();
+    if (d.getDay() === 5) {
+      d.setDate(d.getDate() + 7);
+    } else {
+      while (d.getDay() !== 5) {
+        d.setDate(d.getDate() + 1);
+      }
+    }
+    for(let i=0; i<4; i++) {
+      dates.push(new Date(d));
+      d.setDate(d.getDate() + 7);
+    }
+    return dates;
+  };
+  
+  const [availableFridays] = useState(() => getNextFridays());
+  const [sinergiasData, setSinergiasData] = useState({ 
+    nombre: '', 
+    fecha: availableFridays[0].toISOString().split('T')[0] 
+  });
   const [isSubmittingSinergias, setIsSubmittingSinergias] = useState(false);
   
   // --- ESTADOS PARA FORMULARIOS DE PAGO ---
@@ -357,6 +380,7 @@ function App() {
       {/* ---------------------------------
           MAIN APP INTERFACE
           --------------------------------- */}
+      <div className="no-print">
       <header className="bni-header">
         <div className="bni-header-logo-container">
           <img src="/logo_bni_trabajo.png" alt="Logo BNI Trabajo" />
@@ -647,6 +671,14 @@ function App() {
           />
         </a>
       </footer>
+      </div> {/* END OF NO-PRINT */}
+
+      {/* FLOATING ACTION BUTTON PARA SINERGIAS */}
+      {cart.length > 0 && (
+        <button className="fab-descargar no-print" onClick={() => setShowModalSinergias(true)}>
+          📥 Descargar PDF ({cart.length})
+        </button>
+      )}
 
       {/* CHAT POPUP PROACTIVE */}
       {showChatPopup && !popupDismissed && (
@@ -685,13 +717,22 @@ function App() {
             </div>
             
             <div className="form-group">
-              <label>Día de la Visita</label>
-              <input 
-                type="date" 
+              <label>Día de la Visita (Viernes)</label>
+              <select 
                 className="form-control" 
                 value={sinergiasData.fecha}
                 onChange={(e) => setSinergiasData({...sinergiasData, fecha: e.target.value})}
-              />
+              >
+                {availableFridays.map(date => {
+                  const dateStr = date.toISOString().split('T')[0];
+                  const displayDate = date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                  return (
+                    <option key={dateStr} value={dateStr}>
+                      {displayDate.charAt(0).toUpperCase() + displayDate.slice(1)}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '25px' }}>
