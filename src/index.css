@@ -415,15 +415,12 @@ section[id] {
 
 /* --- NETWORKING CART & PDF STYLES --- */
 .cart-panel {
-  position: sticky;
-  top: 80px; 
   background: white;
   border: 2px solid var(--bni-red);
   padding: 20px;
   border-radius: 6px;
   box-shadow: 0 4px 15px rgba(200, 16, 46, 0.2);
   margin-bottom: 30px;
-  z-index: 90;
 }
 .cart-panel-header {
   display: flex;
