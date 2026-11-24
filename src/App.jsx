@@ -239,21 +239,41 @@ function App() {
       try {
         const responseData = await res.json();
         
-        // Revolut a veces devuelve la URL en la raíz y a veces dentro de 'metadata'
-        const urlDestino = responseData?.checkout_url || responseData?.metadata?.checkout_url;
-
-        if (urlDestino) {
-          if (urlDestino.startsWith('http')) {
-            window.location.href = urlDestino;
-            redirected = true;
-          } else {
-            console.error("El checkout_url recibido no es una URL válida:", urlDestino);
-            alert("⚠️ Error: n8n devolvió un enlace inválido en lugar de la pasarela de pago.");
-            redirected = true; // Evitar la alerta de éxito
+        // 1. Redirección a Cecabank (TPV Virtual Unicaja por formulario POST firmado)
+        if (responseData?.action && responseData?.fields) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = responseData.action;
+          
+          // Inyectamos todos los campos firmados por n8n (MerchantID, Importe, Firma, etc.)
+          for (const [key, value] of Object.entries(responseData.fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+          }
+          
+          document.body.appendChild(form);
+          form.submit();
+          redirected = true;
+        } 
+        // 2. Compatibilidad hacia atrás (por si llega una URL de checkout directa)
+        else {
+          const urlDestino = responseData?.checkout_url || responseData?.metadata?.checkout_url;
+          if (urlDestino) {
+            if (urlDestino.startsWith('http')) {
+              window.location.href = urlDestino;
+              redirected = true;
+            } else {
+              console.error("El enlace de pago recibido no es una URL válida:", urlDestino);
+              alert("⚠️ Error: n8n devolvió un enlace inválido para el pago.");
+              redirected = true;
+            }
           }
         }
       } catch (e) {
-        console.warn("La respuesta no contenía un JSON válido o faltaba checkout_url", e);
+        console.warn("La respuesta no contenía los datos de pago esperados:", e);
       }
       
       if (!redirected) {
